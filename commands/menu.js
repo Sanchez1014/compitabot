@@ -18,7 +18,8 @@ module.exports = {
     texto += " - !ban @usuario\n"
     texto += " - !mute\n"
     texto += " - !unmute\n"
-    texto += " - !tagall       (mencionar todos)\n\n"
+    texto += " - !tagall       (mencionar todos)\n"
+    texto += " - Bienvenida automática (se envía al entrar un nuevo usuario)\n\n"
 
     texto += "Anuncios:\n"
     texto += " - !anuncio <mensaje>\n"
