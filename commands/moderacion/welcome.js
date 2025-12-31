@@ -14,9 +14,8 @@ function saveSettings(settings) {
 module.exports = {
   name: "bienvenida",
 
-  execute: async ({ sock, from, args, sender }) => {
+  execute: async ({ sock, from, args }) => {
     const settings = loadSettings()
-
     if (!settings[from]) settings[from] = { welcome: false, goodbye: false }
 
     const option = args[0]?.toLowerCase()
@@ -38,12 +37,14 @@ module.exports = {
 
     const settings = loadSettings()
     const group = update.id
+
     if (!settings[group]?.welcome) return
 
     const metadata = await sock.groupMetadata(group)
     const groupName = metadata.subject
 
     for (const user of update.participants) {
+      // ⚡ corregido: enviar correctamente la mención
       await sock.sendMessage(group, {
         text: `👋 Bienvenido/a @${user.split("@")[0]} al grupo *${groupName}*`,
         mentions: [user]

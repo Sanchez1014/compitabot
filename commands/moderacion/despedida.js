@@ -16,7 +16,6 @@ module.exports = {
 
   execute: async ({ sock, from, args }) => {
     const settings = loadSettings()
-
     if (!settings[from]) settings[from] = { welcome: false, goodbye: false }
 
     const option = args[0]?.toLowerCase()
@@ -38,6 +37,7 @@ module.exports = {
 
     const settings = loadSettings()
     const group = update.id
+
     if (!settings[group]?.goodbye) return
 
     const metadata = await sock.groupMetadata(group)
