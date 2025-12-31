@@ -26,34 +26,48 @@ async function startBot() {
     if (connection === "close") startBot()
   })
 
+  // ===============================
+  // 📌 EVENTOS DE GRUPO (BIENVENIDA)
+  // ===============================
+  sock.ev.on("group-participants.update", async (update) => {
+    try {
+      for (const cmd of commands) {
+        if (typeof cmd.onGroupUpdate === "function") {
+          await cmd.onGroupUpdate({ sock, update })
+        }
+      }
+    } catch (err) {
+      console.error("Error en evento de grupo:", err)
+    }
+  })
+
+  // ===============================
+  // 📩 COMANDOS POR MENSAJE
+  // ===============================
   sock.ev.on("messages.upsert", async ({ messages }) => {
+
     const m = messages[0]
     if (!m.message || m.key.fromMe) return
 
     const from = m.key.remoteJid
     const sender = m.key.participant || from
 
-    // Obtener texto del mensaje de forma segura
     const text =
       m.message.conversation ||
       m.message.extendedTextMessage?.text ||
       ""
 
-    // Si no empieza con el prefix no hacer nada
     if (!text.startsWith(PREFIX)) return
 
-    // Separar comando y argumentos
     const args = text.slice(PREFIX.length).trim().split(/ +/)
     const cmdName = args.shift().toLowerCase()
 
-    // Buscar comando en el array cargado
     const command = commands.find(c => c.name === cmdName)
     if (!command) {
       return sock.sendMessage(from, { text: "Comando no reconocido. Usa !menu" })
     }
 
     try {
-      // Ejecutar comando pasando contexto
       await command.execute({ sock, m, from, sender, args })
     } catch (err) {
       console.error(err)
