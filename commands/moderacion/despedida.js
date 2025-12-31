@@ -12,40 +12,40 @@ function saveSettings(settings) {
 }
 
 module.exports = {
-  name: "bienvenida",
+  name: "despedida",
 
-  execute: async ({ sock, from, args, sender }) => {
+  execute: async ({ sock, from, args }) => {
     const settings = loadSettings()
 
     if (!settings[from]) settings[from] = { welcome: false, goodbye: false }
 
     const option = args[0]?.toLowerCase()
     if (option === "on") {
-      settings[from].welcome = true
+      settings[from].goodbye = true
       saveSettings(settings)
-      await sock.sendMessage(from, { text: "✅ Bienvenida automática ACTIVADA" })
+      await sock.sendMessage(from, { text: "✅ Despedida automática ACTIVADA" })
     } else if (option === "off") {
-      settings[from].welcome = false
+      settings[from].goodbye = false
       saveSettings(settings)
-      await sock.sendMessage(from, { text: "❌ Bienvenida automática DESACTIVADA" })
+      await sock.sendMessage(from, { text: "❌ Despedida automática DESACTIVADA" })
     } else {
-      await sock.sendMessage(from, { text: "Uso: !bienvenida on/off" })
+      await sock.sendMessage(from, { text: "Uso: !despedida on/off" })
     }
   },
 
   onGroupUpdate: async ({ sock, update }) => {
-    if (update.action !== "add") return
+    if (update.action !== "remove") return
 
     const settings = loadSettings()
     const group = update.id
-    if (!settings[group]?.welcome) return
+    if (!settings[group]?.goodbye) return
 
     const metadata = await sock.groupMetadata(group)
     const groupName = metadata.subject
 
     for (const user of update.participants) {
       await sock.sendMessage(group, {
-        text: `👋 Bienvenido/a @${user.split("@")[0]} al grupo *${groupName}*`,
+        text: `👋 @${user.split("@")[0]} ha salido del grupo *${groupName}*`,
         mentions: [user]
       })
     }
